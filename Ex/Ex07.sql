@@ -242,3 +242,39 @@ from employees
 where salary > all (select salary
                     from employees
                     where department_id = 110);
+                    
+/**************************************
+*조건절에서 비교 VS 테이블에서 조인
+***************************************/
+                    
+--조건절에서의 비교
+
+--1. 각 부서별 최고 급여 리스트
+select	department_id,
+		max(salary)
+from employees
+group by department_id;
+
+                    
+--2. 직원리스트에서 부서별 최고 급여를 받는 사람을 구한다.                    
+select department_id, 
+       employee_id,
+       first_name,
+       salary
+from employees
+where (department_id, salary) in (select department_id, 
+										 max(salary)
+                                  from employees
+                                  group by department_id);
+                                  
+--테이블에서 조인
+select em.department_id,
+       em.employee_id,
+       em.first_name,
+       em.salary
+from employees em, (select department_id,
+                           max(salary) as salary
+                    from employees
+                    group by department_id) ms
+where em.department_id = ms.department_id
+and em.salary = ms.salary;
