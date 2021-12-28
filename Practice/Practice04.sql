@@ -21,14 +21,16 @@ select em.employee_id,
 from employees em, (select avg(salary) avgsal,
                            max(salary) maxsal
                     from employees) ams
-where salary between ams.avgsal and ams.maxsal;
+where salary between ams.avgsal and ams.maxsal
+order by salary asc;
 
 /*문제3.
 직원중 Steven(first_name) king(last_name)이 소속된 부서(departments)가 있는 곳의 주소
 를 알아보려고 한다.
 도시아이디(location_id), 거리명(street_address), 우편번호(postal_code), 도시명(city), 주
 (state_province), 나라아이디(country_id) 를 출력하세요*/
-select lo.location_id,
+select de.department_id,
+	   lo.location_id,
        lo.street_address,
        lo.postal_code,
        lo.city,
@@ -83,19 +85,17 @@ from employees e, (select department_id,
                    group by department_id) ms
 where e.department_id = ms.department_id
 and e.salary = ms.maxsal
-order by salary desc;
+order by e.salary desc;
 
 /*문제6.
 각 업무(job) 별로 연봉(salary)의 총합을 구하고자 합니다. 
 연봉 총합이 가장 높은 업무부터 업무명(job_title)과 연봉 총합을 조회하시오*/
 select  j.job_title,
-        e.salary
-from employees e, jobs j, (select sum(salary) sumsal
-                           from employees
-                           group by job_id) s
+        sum(salary)
+from employees e, jobs j
 where e.job_id = j.job_id
-and e.salary = s.sumsal
-order by s.sumsal desc;
+group by j.job_title
+order by sum(salary) desc;
         
 /*문제7.
 자신의 부서 평균 급여보다 연봉(salary)이 많은 직원의 직원번호(employee_id), 이름
